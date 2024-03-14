@@ -54,7 +54,6 @@ class Endpoints<TEntity>(RouteGroupBuilder mapGroup)
         mapGroup.MapPost("/", ([FromBody] TEntity entity, TodoDbContext dbContext) =>
         {
             dbContext.Set<TEntity>().Add(entity);
-
             try
             {
                 dbContext.SaveChanges();

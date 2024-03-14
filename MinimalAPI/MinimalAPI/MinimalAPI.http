@@ -9,6 +9,29 @@ POST {{MinimalAPI_HostAddress}}/todoItems
 Content-Type: application/json
 
 {
-  "iscompleted":false
+  "title": "Item",
+  "iscompleted": false
+}
+###
+
+GET {{MinimalAPI_HostAddress}}/todoItems
+
+###
+
+GET {{MinimalAPI_HostAddress}}/todoItems/1
+
+###
+
+DELETE {{MinimalAPI_HostAddress}}/todoItems/2
+
+###
+
+PUT {{MinimalAPI_HostAddress}}/todoItems/4
+Content-Type: application/json
+
+{
+  "id": 4,
+  "title": "Item 2",
+  "iscompleted": true
 }
 ###
