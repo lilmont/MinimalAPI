@@ -81,6 +81,30 @@ class Endpoints<TEntity>(RouteGroupBuilder mapGroup)
         });
         return this;
     }
+
+    public Endpoints<TEntity> WithDelete(Action<CreateEndpointConfiguration<TEntity>> configure)
+    {
+        mapGroup.MapDelete("/{id}", ([FromRoute] int id, TodoDbContext dbContext) =>
+        {
+            var currentEntity = dbContext.Set<TEntity>().Find(id);
+            if (currentEntity is null)
+            {
+                return Results.NotFound();
+            }
+            dbContext.Remove(currentEntity);
+
+            try
+            {
+                dbContext.SaveChanges();
+                return Results.Ok("Deleted!");
+            }
+            catch (Exception ex)
+            {
+                return Results.Problem("Something went wrong: " + ex.Message);
+            }
+        });
+        return this;
+    }
 }
 
 #region TodoCreate
@@ -163,6 +187,39 @@ class TodoUpdateRequest
 }
 
 class TodoUpdateResponse
+{
+    public int Id { get; set; }
+    public string Title { get; set; }
+    public bool IsCompleted { get; set; }
+}
+#endregion
+
+#region TodoDelete
+class DeleteEndpointConfiguration<TEntity>
+{
+    public DeleteEndpointConfiguration<TEntity> RegisterValidator<TValidator>()
+        where TValidator : class
+    {
+        return this;
+    }
+
+    public DeleteEndpointConfiguration<TEntity> RegisterRequestModel<TRequestModel>()
+    {
+        return this;
+    }
+
+    public DeleteEndpointConfiguration<TEntity> RegisterResponseModel<TResponseModel>()
+    {
+        return this;
+    }
+}
+
+class TodoDeleteRequest
+{
+    public int Id { get; set; }
+}
+
+class TodoDeleteResponse
 {
     public int Id { get; set; }
     public string Title { get; set; }
