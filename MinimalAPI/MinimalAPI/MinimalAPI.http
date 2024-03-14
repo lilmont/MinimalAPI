@@ -4,3 +4,11 @@ GET {{MinimalAPI_HostAddress}}/weatherforecast/
 Accept: application/json
 
 ###
+
+POST {{MinimalAPI_HostAddress}}/todoItems
+Content-Type: application/json
+
+{
+  "iscompleted":false
+}
+###
