@@ -15,10 +15,19 @@ var todoEndpoints = new Endpoints<Todo>(app.MapGroup("/todoItems"));
 
 todoEndpoints
     .WithCreate(configure => configure
-    .RegisterValidator<TodoCreateValidation>()
-    .RegisterResponseModel<TodoCreateResponse>()
-    .RegisterResponseModel<TodoCreateResponse>())
-    ;
+        .RegisterValidator<TodoCreateValidation>()
+        .RegisterResponseModel<TodoCreateResponse>()
+        .RegisterResponseModel<TodoCreateResponse>())
+    .WithUpdate(configure => configure
+        .RegisterValidator<TodoCreateValidation>()
+        .RegisterResponseModel<TodoCreateResponse>()
+        .RegisterResponseModel<TodoCreateResponse>())
+    .WithDelete(configure => configure
+        .RegisterValidator<TodoCreateValidation>()
+        .RegisterResponseModel<TodoCreateResponse>()
+        .RegisterResponseModel<TodoCreateResponse>())
+    .WithGetAll()
+    .WithGetById();
 
 app.Run();
 
@@ -39,10 +48,11 @@ class Todo
 class Endpoints<TEntity>(RouteGroupBuilder mapGroup)
     where TEntity : class
 {
+    #region create
     public Endpoints<TEntity> WithCreate(Action<CreateEndpointConfiguration<TEntity>> configure)
     {
         mapGroup.MapPost("/", ([FromBody] TEntity entity, TodoDbContext dbContext) =>
-        {           
+        {
             dbContext.Set<TEntity>().Add(entity);
 
             try
@@ -57,10 +67,12 @@ class Endpoints<TEntity>(RouteGroupBuilder mapGroup)
         });
         return this;
     }
+    #endregion
 
+    #region update
     public Endpoints<TEntity> WithUpdate(Action<CreateEndpointConfiguration<TEntity>> configure)
     {
-        mapGroup.MapPut("/{id}", ([FromBody] TEntity entity,[FromRoute] int id, TodoDbContext dbContext) =>
+        mapGroup.MapPut("/{id}", ([FromBody] TEntity entity, [FromRoute] int id, TodoDbContext dbContext) =>
         {
             var currentEntity = dbContext.Set<TEntity>().Find(id);
             if (currentEntity is null)
@@ -81,7 +93,9 @@ class Endpoints<TEntity>(RouteGroupBuilder mapGroup)
         });
         return this;
     }
+    #endregion
 
+    #region delete
     public Endpoints<TEntity> WithDelete(Action<CreateEndpointConfiguration<TEntity>> configure)
     {
         mapGroup.MapDelete("/{id}", ([FromRoute] int id, TodoDbContext dbContext) =>
@@ -105,6 +119,35 @@ class Endpoints<TEntity>(RouteGroupBuilder mapGroup)
         });
         return this;
     }
+    #endregion
+
+    #region getAll
+    public Endpoints<TEntity> WithGetAll()
+    {
+        mapGroup.MapGet("/", (TodoDbContext dbContext) =>
+        {
+            var items = dbContext.Set<TEntity>().ToList();
+            if (items.Count is 0)
+                return Results.NotFound();
+            return Results.Ok(items);
+        });
+        return this;
+    }
+    #endregion
+
+    #region getById
+    public Endpoints<TEntity> WithGetById()
+    {
+        mapGroup.MapGet("/{id}", ([FromRoute] int id, TodoDbContext dbContext) =>
+        {
+            var item = dbContext.Set<TEntity>().Find(id);
+            if (item is null)
+                return Results.NotFound();
+            return Results.Ok(item);
+        });
+        return this;
+    }
+    #endregion
 }
 
 #region TodoCreate
