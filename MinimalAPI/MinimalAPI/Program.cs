@@ -76,9 +76,7 @@ class Endpoints<TEntity>(RouteGroupBuilder mapGroup)
         {
             var currentEntity = dbContext.Set<TEntity>().Find(id);
             if (currentEntity is null)
-            {
                 return Results.NotFound();
-            }
             dbContext.Entry(currentEntity).CurrentValues.SetValues(entity);
 
             try
@@ -102,9 +100,7 @@ class Endpoints<TEntity>(RouteGroupBuilder mapGroup)
         {
             var currentEntity = dbContext.Set<TEntity>().Find(id);
             if (currentEntity is null)
-            {
                 return Results.NotFound();
-            }
             dbContext.Remove(currentEntity);
 
             try
